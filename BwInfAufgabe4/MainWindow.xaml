@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BwInfAufgabe4"
         mc:Ignorable="d"
-        Title="MainWindow" Height="300" Width="350" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="300" Width="400" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -13,14 +13,34 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="4.5*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBox Name="TextBoxEingabe" Grid.Row="0" Margin="10 5" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto"/>
-            <CheckBox Name="CheckboxAusgabe" Content="Dialogfenster" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button Name="ButtonCalculate" Content="Berechnen" Click="ButtonCalculate_Click" Grid.Row="2" Margin="30 10" />
+            <TextBox Name="TextBoxEingabe" Grid.Row="0" Margin="10 5" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+            <Grid Grid.Row="1" Margin="10 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Name="ButtonBeispiel1" Content="1" Grid.Column="0" Margin="4 11" Click="ButtonBeispiel1_Click"/>
+                <Button Name="ButtonBeispiel2" Content="2" Grid.Column="1" Margin="4 11" Click="ButtonBeispiel2_Click"/>
+                <Button Name="ButtonBeispiel3" Content="3" Grid.Column="2" Margin="4 11" Click="ButtonBeispiel3_Click"/>
+                <Button Name="ButtonBeispiel4" Content="4" Grid.Column="3" Margin="4 11" Click="ButtonBeispiel4_Click"/>
+                <Button Name="ButtonBeispiel5" Content="5" Grid.Column="4" Margin="4 11" Click="ButtonBeispiel5_Click"/>
+            </Grid>
         </Grid>
-        <TextBox Name="TextBoxAusgabe" Grid.Column="1" IsReadOnly="True" Margin="10 5" HorizontalScrollBarVisibility="Auto"/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox Name="TextBoxAusgabe" Grid.Row="0" IsReadOnly="True" Margin="10 5" HorizontalScrollBarVisibility="Auto"/>
+            <Button Name="ButtonCalculate" Content="Berechnen" Click="ButtonCalculate_Click" Grid.Row="1" Margin="30 10" />
+
+        </Grid>
+
     </Grid>
 </Window>
