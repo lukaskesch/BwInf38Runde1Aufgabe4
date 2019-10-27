@@ -25,10 +25,11 @@ namespace BwInfAufgabe4
         {
             InitializeComponent();
         }
-        double Verbrauch = 0;
-        double Tankgroeße = 0;
-        double Tankfuellung = 0;
+        int Verbrauch = 0;
+        int Tankgroeße = 0;
+        int Tankfuellung = 0;
         int Streckenlaenge = 0;
+        int GesammtStreckeGefahren = 0;
         int[,] Tankstellen;
         private void ButtonCalculate_Click(object sender, RoutedEventArgs e)
         {
@@ -37,14 +38,15 @@ namespace BwInfAufgabe4
                 string EingabeString = TextBoxEingabe.Text;
                 string[] EingabeArray = Regex.Split(EingabeString, "\r\n");
 
-                Verbrauch = double.Parse(EingabeArray[0]);
-                Tankgroeße = double.Parse(EingabeArray[1]);
-                Tankfuellung = double.Parse(EingabeArray[2]);
+                Verbrauch = int.Parse(EingabeArray[0]);
+                Tankgroeße = int.Parse(EingabeArray[1]);
+                Tankfuellung = int.Parse(EingabeArray[2]);
                 Streckenlaenge = int.Parse(EingabeArray[3]);
                 Tankstellen = SetTankstellenArray(EingabeArray);
 
                 //TextBoxAusgabe.Text += Verbrauch + "\n" + Tankgroeße + "\n" + Tankfuellung + "\n" + Streckenlaenge + "\n" + EingabeArray[4];
                 //Ausgabe(Tankstellen);
+                MessageBox.Show("Es muss insgesammt " + CalculateNumberOfStops().ToString() + " mal getankt werden");
             }
             catch (Exception)
             {
@@ -79,6 +81,42 @@ namespace BwInfAufgabe4
             {
                 TextBoxAusgabe.Text += "\n" + Tankstellen[i, 0] + " " + Tankstellen[i, 1];
             }
+        }
+        private int CalculateReichweite()
+        {
+            return (Tankfuellung * 100) / Verbrauch;
+        }
+        private int CalculateNumberOfStops()
+        {
+            int NumberOfStops = 0;
+            int StreckeGefahren = GesammtStreckeGefahren + CalculateReichweite();
+
+            //MessageBox.Show(StreckeGefahren.ToString());
+
+            while (StreckeGefahren < Streckenlaenge)
+            {
+                NumberOfStops++;
+                GesammtStreckeGefahren = Tankstellen[GetIndexOfNextGasstation(StreckeGefahren), 0];
+
+                //MessageBox.Show(GesammtStreckeGefahren.ToString());
+
+                Tankfuellung = Tankgroeße;
+                StreckeGefahren = GesammtStreckeGefahren + CalculateReichweite();
+                //MessageBox.Show(StreckeGefahren.ToString());
+
+            }
+            return NumberOfStops;
+        }
+        private int GetIndexOfNextGasstation(int Strecke)
+        {
+            for (int i = 0; i < Tankstellen.GetLength(0); i++)
+            {
+                if (Tankstellen[i, 0] > Strecke)
+                {
+                    return i - 1;
+                }
+            }
+            return 0;
         }
     }
 }
