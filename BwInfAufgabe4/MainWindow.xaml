@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BwInfAufgabe4"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="300" Width="350" WindowStartupLocation="CenterScreen">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox Name="TextBoxEingabe" Grid.Row="0" Margin="10 5" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto"/>
+            <CheckBox Name="CheckboxAusgabe" Content="Dialogfenster" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button Name="ButtonCalculate" Content="Berechnen" Click="ButtonCalculate_Click" Grid.Row="2" Margin="30 10" />
+        </Grid>
+        <TextBox Name="TextBoxAusgabe" Grid.Column="1" IsReadOnly="True" Margin="10 5" HorizontalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>
