@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,18 +12,24 @@ namespace BwInfAufgabe4
     public class CheapestRoute
     {
         int[,] GasStations;
-        int MaxDistance;
-        int MaxFuel;
+        double MaxDistance;
+        double MaxFuel;
         double Fuel;
-        int Consumption;
+        double Consumption;
         int MaxStops;
         double MaxRange;
         int[] Path;
         int[] BestPath;
         double MaxCost;
 
+        List<string> Log;
+        string[] CurrentLog;
+        string[] BestLog;
+
         public CheapestRoute(int[,] _GasStations, int _MaxDistance, int _MaxFuel, int _Fuel, int _Consumption, int _MaxStops, double _MaxCosts)
         {
+            Log = new List<string>();
+
             GasStations = _GasStations;
             MaxDistance = _MaxDistance;
             MaxFuel = _MaxFuel;
@@ -30,10 +38,52 @@ namespace BwInfAufgabe4
             MaxStops = _MaxStops;
             MaxCost = _MaxCosts;
 
-            MaxRange = (double)MaxFuel / (double)Consumption * 100;
+            MaxRange = MaxFuel / Consumption * 100;
             Path = new int[MaxStops];
 
-            Jump(0, -1, Fuel, 0);
+            Log.Add("MaxDistance: " + MaxDistance + " km");
+            Log.Add("MaxFuel: " + MaxFuel + " l");
+            Log.Add("Fuel: " + Fuel + " l");
+            Log.Add("Consumption: " + Consumption + " l/100km");
+            Log.Add("++++++++++++++++++++++++++++++++++++++++++++++++++");
+            Log.Add("[Part 1]");
+            Log.Add("MaxStops: " + MaxStops);
+            Log.Add("MaxCost: " + MaxCost / 100 + " €");
+            Log.Add("++++++++++++++++++++++++++++++++++++++++++++++++++");
+            Log.Add("[Part 2]");
+
+            CurrentLog = new string[MaxStops + 1];
+            BestLog = new string[MaxStops];
+
+            Stopwatch Timer = new Stopwatch();
+            Timer.Start();
+
+            Jump1(0, -1, 0, Fuel, 0);
+
+            Timer.Stop();
+            MessageBox.Show("Zeit: " + Timer.Elapsed);
+
+            StreamWriter SR = new StreamWriter(Environment.CurrentDirectory + "\\log.txt"); ;
+            try
+            {
+                foreach (string L in Log)
+                {
+                    SR.WriteLine(L);
+                }
+
+                if (BestLog != null)
+                {
+                    foreach (string L in BestLog)
+                    {
+                        SR.WriteLine(L);
+                    }
+                }
+            }
+            finally
+            {
+                SR.Flush();
+                SR.Close();
+            }
         }
 
         public int[] GetRoute()
@@ -45,48 +95,78 @@ namespace BwInfAufgabe4
         {
             return MaxCost;
         }
-
-        private void Jump(int _Step, int _StationIndex, double _Fuel, double _Costs)
+        
+        private void Jump1(int _Step, int _Station, double _Distance, double _Fuel, double _Cost)
         {
-            int CurrentDistance;
-            double Range;
+            double DistanceReachable;
 
             if (_Step == 0)
             {
-                CurrentDistance = 0;
-                Range = (double)_Fuel / (double)Consumption * 100;
+                DistanceReachable = _Fuel / Consumption * 100;
             }
             else
             {
-                Path[_Step - 1] = _StationIndex;
-                CurrentDistance = GasStations[_StationIndex, 0];
-                Range = MaxRange;
-                _Costs += ((double)MaxFuel - _Fuel) * GasStations[_StationIndex, 1];
-                _Fuel = MaxFuel;
+                DistanceReachable = _Distance + MaxRange;
+                Path[_Step - 1] = _Station;
             }
-
-            double DistanceReachable = CurrentDistance + Range;
-
-            // If cost limit is reached without a solution abort
-            if (_Costs > MaxCost)
+            
+            if (_Distance + (MaxStops + 1 - _Step) * MaxRange < MaxDistance)
             {
                 return;
             }
 
-            if (CurrentDistance + (MaxStops + 1 - _Step) * MaxRange < MaxDistance)
-            {
-                return;
-            }
+            if (_Cost >= MaxCost) { return; }
 
             if (DistanceReachable >= MaxDistance)
             {
+                double NewFuel;
+                double NewCost;
+                double FuelNeeded = ((MaxDistance - _Distance) / 100 * Consumption);
+                // As much as needed
+                if (FuelNeeded >= _Fuel)
+                {
+                    NewCost = _Cost + (FuelNeeded - _Fuel) * GasStations[_Station, 1];
+                    NewFuel = 0;
+
+                    CurrentLog[_Step] =
+                        "Stop: " + _Step + "\t| " +
+                        "Station: " + _Station + "\t| " +
+                        "Distance: " + _Distance + "\t| " +
+                        "Fuel: " + _Fuel + "\t| " +
+                        "NewFuel: " + NewFuel + "\t| " +
+                        "Amount: " + (FuelNeeded - _Fuel) + "\t| " +
+                        "Price: " + GasStations[_Station, 1] + "\t| " +
+                        "Costs: " + (NewCost - _Cost) + "\t| " +
+                        "AllCosts: " + NewCost;
+                }
+                else
+                {
+                    NewCost = 0;
+                    NewFuel = _Fuel - FuelNeeded;
+
+                    CurrentLog[_Step] =
+                        "Stop: " + _Step + "\t| " +
+                        "Station: " + _Station + "\t| " +
+                        "Distance: " + _Distance + "\t| " +
+                        "Fuel: " + _Fuel + "\t| " +
+                        "NewFuel: " + NewFuel + "\t| " +
+                        "Amount: " + 0 + "\t| " +
+                        "Price: " + GasStations[_Station, 1] + "\t| " +
+                        "Costs: " + (NewCost - _Cost) + "\t| " +
+                        "AllCosts: " + NewCost;
+                }
+
+                if(NewCost >= MaxCost) { return; }
+
                 // Solution
                 int[] FinalPath = new int[MaxStops];
                 Array.Copy(Path, FinalPath, MaxStops);
 
                 BestPath = FinalPath;
-                MaxCost = _Costs;
-                return;
+                MaxCost = NewCost;
+
+                BestLog = new string[CurrentLog.Length];
+                Array.Copy(CurrentLog, BestLog, CurrentLog.Length);
             }
 
             // If step limit is reached without a solution abort
@@ -95,14 +175,88 @@ namespace BwInfAufgabe4
                 return;
             }
 
-            for(int I = GasStations.GetLength(0) - 1; I > _StationIndex; I--)
+            for(int I = GasStations.GetLength(0) - 1; I > _Station; I--)
             {
                 if(GasStations[I, 0] <= DistanceReachable)
                 {
-                    double FuelLeft = _Fuel - ((GasStations[I, 0] - CurrentDistance) / 100 * Consumption);
-                    Jump(_Step + 1, I, FuelLeft, _Costs);
+                    double NewFuel;
+                    double NewCost;
+                    double FuelNeeded = ((GasStations[I, 0] - _Distance) / 100 * Consumption);
+
+                    // As much as needed
+                    if (FuelNeeded >= _Fuel)
+                    {
+                        NewCost = _Cost + (FuelNeeded - _Fuel) * GasStations[_Station, 1];
+                        NewFuel = 0;
+
+                        CurrentLog[_Step] =
+                            "Stop: " + _Step + "\t| " +
+                            "Station: " + _Station + "\t| " +
+                            "Distance: " + _Distance + "\t| " +
+                            "Fuel: " + _Fuel + "\t| " +
+                            "NewFuel: " + NewFuel + "\t| " +
+                            "Amount: " + (FuelNeeded - _Fuel) + "\t\t| " +
+                            "Price: " + GasStations[_Station, 1] + "\t\t| " +
+                            "Costs: " + (NewCost - _Cost) + "\t\t| " +
+                            "AllCosts: " + NewCost;
+
+                        Jump1(_Step + 1, I, GasStations[I, 0], NewFuel, NewCost);
+                    }
+                    else
+                    {
+                        NewCost = 0;
+                        NewFuel = _Fuel - FuelNeeded;
+
+                        if(_Step != 0)
+                        {
+                            CurrentLog[_Step] =
+                            "Stop: " + _Step + "\t| " +
+                            "Station: " + _Station + "\t| " +
+                            "Distance: " + _Distance + "\t| " +
+                            "Fuel: " + _Fuel + "\t| " +
+                            "NewFuel: " + NewFuel + "\t| " +
+                            "Amount: " + 0 + "\t\t| " +
+                            "Price: " + GasStations[_Station, 1] + "\t\t| " +
+                            "Costs: " + (NewCost - _Cost) + "\t\t| " +
+                            "AllCosts: " + NewCost;
+                        }
+                        else
+                        {
+                            CurrentLog[_Step] =
+                            "Stop: " + _Step + "\t| " +
+                            "Station: " + _Station + "\t| " +
+                            "Distance: " + _Distance + "\t| " +
+                            "Fuel: " + _Fuel + "\t| " +
+                            "NewFuel: " + NewFuel + "\t| " +
+                            "Amount: " + 0 + "\t\t| " +
+                            "Price: " + "-" + "\t\t| " +
+                            "Costs: " + (NewCost - _Cost) + "\t\t| " +
+                            "AllCosts: " + NewCost;
+                        }
+
+                        Jump1(_Step + 1, I, GasStations[I, 0], NewFuel, NewCost);
+                    }
+
+                    // As much as possible
+                    if (_Step == 0) { continue; }
+                    NewFuel = MaxFuel - FuelNeeded;
+                    NewCost = _Cost + (MaxFuel - _Fuel) * GasStations[_Station, 1];
+
+                    CurrentLog[_Step] =
+                        "Stop: " + _Step + "\t| " +
+                        "Station: " + _Station + "\t| " +
+                        "Distance: " + _Distance + "\t| " +
+                        "Fuel: " + _Fuel + "\t| " +
+                        "NewFuel: " + NewFuel + "\t| " +
+                        "Amount: " + (MaxFuel - _Fuel) + "\t\t| " +
+                        "Price: " + GasStations[_Station, 1] + "\t\t| " +
+                        "Costs: " + (NewCost - _Cost) + "\t\t| " +
+                        "AllCosts: " + NewCost;
+
+                    Jump1(_Step + 1, I, GasStations[I, 0], NewFuel, NewCost);
                 }
             }
         }
+        
     }
 }
