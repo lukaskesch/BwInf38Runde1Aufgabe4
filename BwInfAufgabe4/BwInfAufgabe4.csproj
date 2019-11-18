@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ShortestRoute.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -94,21 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Fahrt2.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Fahrt1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Fahrt3.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Fahrt4.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Fahrt5.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
