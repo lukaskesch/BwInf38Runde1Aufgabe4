@@ -131,7 +131,6 @@ namespace BwInfAufgabe4
             if (DistanceReachable >= MaxDistance)
             {
                 // Last jump
-                double NewFuel;
                 double NewCost;
                 double FuelNeeded = ((MaxDistance - _Distance) / 100 * Consumption);
 
