@@ -139,13 +139,11 @@ namespace BwInfAufgabe4
                 if (FuelNeeded >= _Fuel)
                 {
                     NewCost = _Cost + (FuelNeeded - _Fuel) * (double)GasStation_Prices[_Station];
-                    NewFuel = 0;
                     GasAmounts[_Step - 1] = (FuelNeeded - _Fuel);
                 }
                 else
                 {
                     NewCost = 0;
-                    NewFuel = _Fuel - FuelNeeded;
                     GasAmounts[_Step - 1] = 0;
                 }
 
@@ -161,6 +159,7 @@ namespace BwInfAufgabe4
 
                 BestPath = FinalPath;
                 MaxCost = NewCost;
+                return;
             }
 
             // If step limit is reached without a solution abort

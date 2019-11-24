@@ -59,8 +59,6 @@ namespace BwInfAufgabe4
             double[] Amounts = CR.GetAmountsPerStop();
             double[] CostPerStop = CR.GetCostPerStop();
 
-            MessageBox.Show(Amounts.Length + " - " + Route.Length);
-
             ListViewStops.Items.Clear();
             for(int I = 0; I < Route.Length; I++)
             {

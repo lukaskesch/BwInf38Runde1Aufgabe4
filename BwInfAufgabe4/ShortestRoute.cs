@@ -71,7 +71,7 @@ namespace BwInfAufgabe4
 
             while (true)
             {
-                // Calculate reacable distance
+                // Calculate reachable distance
                 double DistanceReachable = CurrentDistance + Range;
 
                 // Abort if over distance limit
