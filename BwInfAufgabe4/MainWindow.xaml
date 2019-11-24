@@ -15,17 +15,19 @@
         <GroupBox Header="Route" Padding="10" Margin="0 10 0 0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Tankstellen:" Width="75" />
-                    <Label Content="-" Name="LabelStations" />
+                    <Label Content="Kosten:" Width="80" />
+                    <Label Content="-" Name="LabelCost" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Stops:" Width="75" />
+                    <Label Content="Anzahl Stops:" Width="80" />
                     <Label Content="-" Name="LabelStops" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Kosten:" Width="75" />
-                    <Label Content="-" Name="LabelCost" />
+                    <Label Content="Stops:" Width="75" />
                 </StackPanel>
+                <ListView Padding="10" Name="ListViewStops">
+                    
+                </ListView>
             </StackPanel>
         </GroupBox>
     </StackPanel>

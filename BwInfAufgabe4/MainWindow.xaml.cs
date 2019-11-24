@@ -55,13 +55,19 @@ namespace BwInfAufgabe4
                 MessageBox.Show("Keine Route");
                 return;
             }
-            foreach (int Stop in Route)
+
+            double[] Amounts = CR.GetAmountsPerStop();
+            double[] CostPerStop = CR.GetCostPerStop();
+
+            MessageBox.Show(Amounts.Length + " - " + Route.Length);
+
+            ListViewStops.Items.Clear();
+            for(int I = 0; I < Route.Length; I++)
             {
-                Out += GasStation_Distances[Stop];
-                Out += "m ";
+                int Stop = Route[I];
+                ListViewStops.Items.Add(GasStation_Distances[Stop] + "m - " + Amounts[I].ToString("#.00") + "l -> " + CostPerStop[I].ToString("#.00") + "€");
             }
 
-            LabelStations.Content = Out;
             LabelStops.Content = MaxStops.ToString();
             LabelCost.Content = Costs.ToString("#.00") + "€";
         }

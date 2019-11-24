@@ -22,6 +22,7 @@ namespace BwInfAufgabe4
 
             MaxRange = MaxFuel / Consumption * 100;
             Path = new int[MaxStops];
+            GasAmounts = new double[MaxStops];
 
             Drive(0, -1, 0, Fuel, 0);
         }
@@ -62,6 +63,30 @@ namespace BwInfAufgabe4
 
         // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+        public double[] GetAmountsPerStop()
+        {
+            return BestGasAmounts;
+        }
+
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        public double[] GetCostPerStop()
+        {
+            double[] EuroAmounts = new double[BestGasAmounts.Length];
+            double Multiplier = Math.Pow(10, 2);
+
+
+            for (int I = 0; I < BestPath.Length; I++)
+            {
+                int Stop = BestPath[I];
+                EuroAmounts[I] = Math.Ceiling(BestGasAmounts[I] * GasStation_Prices[Stop] / 100 * Multiplier) / Multiplier;
+            }
+
+            return EuroAmounts;
+        }
+
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
         private int GetGasStationIndex(int Position)
         {
             // Seach index of Position
@@ -78,6 +103,8 @@ namespace BwInfAufgabe4
         }
 
         // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        private double[] GasAmounts;
+        private double[] BestGasAmounts;
 
         private void Drive(int _Step, int _Station, double _Distance, double _Fuel, double _Cost)
         {
@@ -113,11 +140,13 @@ namespace BwInfAufgabe4
                 {
                     NewCost = _Cost + (FuelNeeded - _Fuel) * (double)GasStation_Prices[_Station];
                     NewFuel = 0;
+                    GasAmounts[_Step - 1] = (FuelNeeded - _Fuel);
                 }
                 else
                 {
                     NewCost = 0;
                     NewFuel = _Fuel - FuelNeeded;
+                    GasAmounts[_Step - 1] = 0;
                 }
 
                 // Ignore more expensive routes
@@ -126,6 +155,9 @@ namespace BwInfAufgabe4
                 // Update values
                 int[] FinalPath = new int[MaxStops];
                 Array.Copy(Path, FinalPath, MaxStops);
+
+                BestGasAmounts = new double[MaxStops];
+                Array.Copy(GasAmounts, BestGasAmounts, MaxStops);
 
                 BestPath = FinalPath;
                 MaxCost = NewCost;
@@ -151,6 +183,7 @@ namespace BwInfAufgabe4
                     NewCost = _Cost + (FuelNeeded - _Fuel) * (double)GasStation_Prices[_Station];
                     NewFuel = 0;
 
+                    GasAmounts[_Step - 1] = (FuelNeeded - _Fuel);
                     Drive(_Step + 1, I, (double)GasStation_Distances[I], NewFuel, NewCost);
                 }
                 else
@@ -158,6 +191,7 @@ namespace BwInfAufgabe4
                     NewCost = 0;
                     NewFuel = _Fuel - FuelNeeded;
 
+                    // Don't set GasAmounts - Prevent Step 0 Exception & Always 0
                     Drive(_Step + 1, I, (double)GasStation_Distances[I], NewFuel, NewCost);
                 }
 
@@ -166,6 +200,7 @@ namespace BwInfAufgabe4
                 NewFuel = MaxFuel - FuelNeeded;
                 NewCost = _Cost + (MaxFuel - _Fuel) * (double)GasStation_Prices[_Station];
 
+                GasAmounts[_Step - 1] = (MaxFuel - _Fuel);
                 Drive(_Step + 1, I, (double)GasStation_Distances[I], NewFuel, NewCost);
             }
         }
