@@ -63,7 +63,7 @@ namespace BwInfAufgabe4
             for(int I = 0; I < Route.Length; I++)
             {
                 int Stop = Route[I];
-                ListViewStops.Items.Add(GasStation_Distances[Stop] + "m - " + Amounts[I].ToString("#.00") + "l -> " + CostPerStop[I].ToString("#.00") + "€");
+                ListViewStops.Items.Add(GasStation_Distances[Stop] + "km - " + Amounts[I].ToString("#.00") + "l -> " + CostPerStop[I].ToString("#.00") + "€");
             }
 
             LabelStops.Content = MaxStops.ToString();
